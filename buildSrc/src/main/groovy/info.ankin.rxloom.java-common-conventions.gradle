@@ -9,6 +9,14 @@ java {
     }
 }
 
+tasks.withType(JavaCompile) { JavaCompile it ->
+    it.options.compilerArgs.add '--enable-preview'
+}
+
+tasks.withType(JavaExec) { JavaExec it ->
+    it.jvmArgs += '--enable-preview'
+}
+
 repositories {
     mavenCentral()
 }

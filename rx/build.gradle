@@ -5,3 +5,8 @@ plugins {
 dependencies {
     implementation 'org.reactivestreams:reactive-streams'
 }
+
+tasks.register('RxExperiments.main', JavaExec) {
+    it.mainClass.set 'info.ankin.rxloom.rx.RxExperiments'
+    it.classpath(sourceSets.main.runtimeClasspath)
+}
