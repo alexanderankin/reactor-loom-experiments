@@ -6,6 +6,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.annotation.NonNull;
 
+import java.time.Duration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,6 +25,7 @@ public class ReactorExperiments {
 
         String abc = abcMono
                 .subscribeOn(scheduler)
+                .delayElement(Duration.ofMillis(10))
                 .block();
 
         System.out.println(abc);
@@ -38,12 +40,14 @@ public class ReactorExperiments {
         }
     }
 
-    private static class LoomScheduler implements Scheduler {
+    public static class LoomScheduler implements Scheduler {
+        Thread.Builder.OfVirtual ofVirtual;
+        ThreadFactory factory;
         final Scheduler scheduler;
 
         public LoomScheduler() {
-            Thread.Builder.OfVirtual ofVirtual = Thread.ofVirtual();
-            ThreadFactory factory = ofVirtual.factory();
+            ofVirtual = Thread.ofVirtual();
+            factory = ofVirtual.factory();
 
             scheduler = Schedulers.fromExecutor(new ThreadPoolExecutor(1,
                     5,
@@ -62,29 +66,25 @@ public class ReactorExperiments {
 
         @NonNull
         @Override
-        public Worker createWorker() {
-            return scheduler.createWorker();
+        public Disposable schedule(@NonNull Runnable task,
+                                   long delay,
+                                   @NonNull TimeUnit unit) {
+            return schedule(new Delays.DelayedTask(this, task, delay, unit));
         }
 
         @NonNull
-        public Worker createWorkerIdea() {
-            return new Worker() {
-                @NonNull
-                @Override
-                public Disposable schedule(@NonNull Runnable task) {
-                    return new Disposable() {
-                        @Override
-                        public void dispose() {
+        @Override
+        public Disposable schedulePeriodically(@NonNull Runnable task,
+                                               long initialDelay,
+                                               long period,
+                                               @NonNull TimeUnit unit) {
+            return schedule(new Delays.PeriodTask(this, task, initialDelay, period, unit));
+        }
 
-                        }
-                    };
-                }
-
-                @Override
-                public void dispose() {
-
-                }
-            };
+        @NonNull
+        @Override
+        public Worker createWorker() {
+            return scheduler.createWorker();
         }
     }
 }
