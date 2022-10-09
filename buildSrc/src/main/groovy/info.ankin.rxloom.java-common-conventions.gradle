@@ -3,6 +3,12 @@ plugins {
     id 'idea'
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -41,6 +47,8 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    implementation platform('io.projectreactor:reactor-bom:2020.0.23')
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:3+'

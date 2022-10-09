@@ -2,6 +2,12 @@ plugins {
     id 'groovy-gradle-plugin'
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+}
+
 repositories {
     gradlePluginPortal()
 }
