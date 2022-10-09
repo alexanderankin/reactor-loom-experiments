@@ -1,0 +1,10 @@
+plugins {
+    id 'info.ankin.rxloom.java-common-conventions'
+}
+
+repositories.maven { url 'https://repo.spring.io/milestone' }
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.0.0-M5')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:3.0.0-M5')
+}

@@ -1,3 +1,4 @@
 rootProject.name = 'reactor-loom-experiments'
 include 'rx'
 include 'reactor'
+include 'spring:self-callback'
