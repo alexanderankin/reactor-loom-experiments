@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// https://docs.gradle.org/current/userguide/java_testing.html#sec:configuring_java_integration_tests
+sourceSets {
+    itest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+// tell intellij about the sourceSet
+idea {
+    module {
+        sourceDirs -= file('src/itest/java')
+        testSourceDirs += file('src/itest/java')
+    }
+}
+
+configurations {
+    // lombok
+    testCompileOnly.extendsFrom(compileOnly)
+    testAnnotationProcessor.extendsFrom(annotationProcessor)
+    itestCompileOnly.extendsFrom(testCompileOnly)
+    itestAnnotationProcessor.extendsFrom(testAnnotationProcessor)
+
+    // itests
+    itestImplementation.extendsFrom testImplementation
+    itestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+dependencies {
+    // constraints { implementation 'org.apache.commons:commons-text:1.9' }
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.mockito:mockito-core:3+'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.10'
+    testImplementation 'com.fasterxml.uuid:java-uuid-generator:4.0.1'
+}
+
+// from same page as itest sourceSets block
+def integrationTest = tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.itest.output.classesDirs
+    classpath = sourceSets.itest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
+
+// use junit for all tests
+tasks.withType(Test) { t -> t.useJUnitPlatform() }

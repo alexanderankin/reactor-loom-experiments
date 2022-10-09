@@ -1,0 +1,4 @@
+plugins {
+    id 'info.ankin.rxloom.java-common-conventions'
+    id 'java-library'
+}

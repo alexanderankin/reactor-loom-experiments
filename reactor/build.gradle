@@ -1,0 +1,6 @@
+plugins {
+    id 'info.ankin.rxloom.java-common-conventions'
+}
+
+dependencies {
+}
